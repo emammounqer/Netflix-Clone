@@ -1,27 +1,74 @@
 import { useEffect, useState } from "react";
 import getTrendingMovies from "../../api/getTrendingMovies";
 import MovieList from "../MovieList/MovieList";
+import Spinner from "react-bootstrap/Spinner";
+import { PageNavigation } from "./PageNavigation";
 
 function Home() {
   const [movieList, setMovieList] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalNumOfPages, setTotalNumOfPages] = useState(1);
 
   useEffect(() => {
     async function fetchData() {
+      setLoading(true);
       try {
-        const movieListData = await getTrendingMovies();
+        const movieListData = await getTrendingMovies(page);
         setMovieList(movieListData.results);
+        setTotalNumOfPages(movieListData.total_pages);
       } catch (error) {
-        console.log(error);
+        setError(error);
+      } finally {
+        setLoading(false);
       }
     }
 
     fetchData();
-  }, []);
+  }, [page]);
+
+  const moveToNextPage = () => {
+    if (page < totalNumOfPages) {
+      setPage(page + 1);
+    }
+  };
+
+  const moveToPrevPage = () => {
+    if (page > 1) {
+      setPage(page - 1);
+    }
+  };
+
+  if (error)
+    return (
+      <pre className="text-danger px-2">
+        Error: {JSON.stringify(error, undefined, 2)}
+      </pre>
+    );
 
   return (
-    <div>
-      <MovieList movieList={movieList} />
-    </div>
+    <main>
+      <PageNavigation
+        page={page}
+        totalNumOfPages={totalNumOfPages}
+        moveToNextPage={moveToNextPage}
+        moveToPrevPage={moveToPrevPage}
+      ></PageNavigation>
+
+      {loading ? (
+        <Spinner animation="border" />
+      ) : (
+        <MovieList movieList={movieList} />
+      )}
+
+      <PageNavigation
+        page={page}
+        totalNumOfPages={totalNumOfPages}
+        moveToNextPage={moveToNextPage}
+        moveToPrevPage={moveToPrevPage}
+      ></PageNavigation>
+    </main>
   );
 }
 export default Home;
