@@ -37,7 +37,7 @@ function ModalMovie({ movie, show, closeModal }) {
       });
       closeModal();
     } catch (error) {
-      setError(error);
+      setError(error.response.data || error.message);
     } finally {
       setLoading(false);
     }

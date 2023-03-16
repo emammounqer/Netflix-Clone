@@ -1,35 +1,23 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import getTrendingMovies from "../../api/getTrendingMovies";
 import MovieList from "../MovieList/MovieList";
 import Spinner from "react-bootstrap/Spinner";
 import { PageNavigation } from "./PageNavigation";
+import useApiFetch from "../../hooks/useApiFetch";
 
 function Home() {
-  const [movieList, setMovieList] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [page, setPage] = useState(1);
-  const [totalNumOfPages, setTotalNumOfPages] = useState(1);
 
-  useEffect(() => {
-    async function fetchData() {
-      setLoading(true);
-      try {
-        const movieListData = await getTrendingMovies(page);
-        setMovieList(movieListData.results);
-        setTotalNumOfPages(movieListData.total_pages);
-      } catch (error) {
-        setError(error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchData();
-  }, [page]);
+  const { data, loading, error } = useApiFetch(() => getTrendingMovies(page), {
+    defValue: {
+      results: [],
+      total_pages: 1,
+    },
+    dependanceArray: [page],
+  });
 
   const moveToNextPage = () => {
-    if (page < totalNumOfPages) {
+    if (page < data.total_pages) {
       setPage(page + 1);
     }
   };
@@ -49,25 +37,18 @@ function Home() {
 
   return (
     <main>
-      <PageNavigation
-        page={page}
-        totalNumOfPages={totalNumOfPages}
-        moveToNextPage={moveToNextPage}
-        moveToPrevPage={moveToPrevPage}
-      ></PageNavigation>
-
       {loading ? (
         <Spinner animation="border" />
       ) : (
-        <MovieList movieList={movieList} />
+        <MovieList movieList={data.results} />
       )}
 
       <PageNavigation
         page={page}
-        totalNumOfPages={totalNumOfPages}
+        totalNumOfPages={data.total_pages}
         moveToNextPage={moveToNextPage}
         moveToPrevPage={moveToPrevPage}
-      ></PageNavigation>
+      />
     </main>
   );
 }
