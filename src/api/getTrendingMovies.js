@@ -1,12 +1,9 @@
+import axios from "axios";
 import { API_URL } from "./base";
 
-async function getTrendingMovies(page = 1) {
-  const resp = await fetch(`${API_URL}/trending?page=${page}`);
-
-  const data = await resp.json();
-  if (resp.ok === false) throw data;
-
-  return data;
+async function getTrendingMovies(page) {
+  const resp = await axios.get(`${API_URL}/trending`, { params: { page } });
+  return resp.data;
 }
 
 export default getTrendingMovies;

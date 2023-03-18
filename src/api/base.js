@@ -1,1 +1,1 @@
-export const API_URL = "https://movies-library-production-919c.up.railway.app";
+export const API_URL = process.env.REACT_APP_API_URL;

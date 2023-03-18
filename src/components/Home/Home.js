@@ -3,6 +3,7 @@ import getTrendingMovies from "../../api/getTrendingMovies";
 import MovieList from "../MovieList/MovieList";
 import Spinner from "react-bootstrap/Spinner";
 import { PageNavigation } from "./PageNavigation";
+import { AllModals } from "../ModalMovie";
 
 function Home() {
   const [movieList, setMovieList] = useState([]);
@@ -19,7 +20,7 @@ function Home() {
         setMovieList(movieListData.results);
         setTotalNumOfPages(movieListData.total_pages);
       } catch (error) {
-        setError(error);
+        setError(error.response.data || error.message);
       } finally {
         setLoading(false);
       }
@@ -49,17 +50,10 @@ function Home() {
 
   return (
     <main>
-      <PageNavigation
-        page={page}
-        totalNumOfPages={totalNumOfPages}
-        moveToNextPage={moveToNextPage}
-        moveToPrevPage={moveToPrevPage}
-      ></PageNavigation>
-
       {loading ? (
         <Spinner animation="border" />
       ) : (
-        <MovieList movieList={movieList} />
+        <MovieList movieList={movieList} modals={[AllModals.AddToFav]} />
       )}
 
       <PageNavigation
