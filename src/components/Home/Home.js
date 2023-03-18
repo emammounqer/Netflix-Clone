@@ -1,23 +1,36 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import getTrendingMovies from "../../api/getTrendingMovies";
 import MovieList from "../MovieList/MovieList";
 import Spinner from "react-bootstrap/Spinner";
 import { PageNavigation } from "./PageNavigation";
-import useApiFetch from "../../hooks/useApiFetch";
+import { AllModals } from "../ModalMovie";
 
 function Home() {
+  const [movieList, setMovieList] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [page, setPage] = useState(1);
+  const [totalNumOfPages, setTotalNumOfPages] = useState(1);
 
-  const { data, loading, error } = useApiFetch(() => getTrendingMovies(page), {
-    defValue: {
-      results: [],
-      total_pages: 1,
-    },
-    dependanceArray: [page],
-  });
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      try {
+        const movieListData = await getTrendingMovies(page);
+        setMovieList(movieListData.results);
+        setTotalNumOfPages(movieListData.total_pages);
+      } catch (error) {
+        setError(error.response.data || error.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, [page]);
 
   const moveToNextPage = () => {
-    if (page < data.total_pages) {
+    if (page < totalNumOfPages) {
       setPage(page + 1);
     }
   };
@@ -40,15 +53,15 @@ function Home() {
       {loading ? (
         <Spinner animation="border" />
       ) : (
-        <MovieList movieList={data.results} />
+        <MovieList movieList={movieList} modals={[AllModals.AddToFav]} />
       )}
 
       <PageNavigation
         page={page}
-        totalNumOfPages={data.total_pages}
+        totalNumOfPages={totalNumOfPages}
         moveToNextPage={moveToNextPage}
         moveToPrevPage={moveToPrevPage}
-      />
+      ></PageNavigation>
     </main>
   );
 }

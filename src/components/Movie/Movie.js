@@ -1,7 +1,8 @@
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
+import { AllModals } from "../ModalMovie/index";
 
-function Movie({ movie, openModal }) {
+function Movie({ movie, handleActiveModal, modals }) {
   return (
     <Card className="h-100">
       <Card.Img
@@ -12,8 +13,22 @@ function Movie({ movie, openModal }) {
       />
       <Card.Body className="d-flex flex-column justify-content-between align-items-center">
         <Card.Title>{movie.title} &nbsp;</Card.Title>
-        {/* <Card.Text>{movie.overview}</Card.Text> */}
-        <Button onClick={() => openModal(movie)}>Add To Favorite</Button>
+
+        {modals?.map((modal) => {
+          let variant;
+          if (modal === AllModals.Delete) variant = "danger";
+          else if (modal === AllModals.Update) variant = "success";
+
+          return (
+            <Button
+              key={modal.id}
+              variant={variant}
+              onClick={() => handleActiveModal(modal, movie)}
+            >
+              {modal.rep}
+            </Button>
+          );
+        })}
       </Card.Body>
     </Card>
   );

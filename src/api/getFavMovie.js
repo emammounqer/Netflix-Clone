@@ -1,9 +1,9 @@
 import axios from "axios";
 import { API_URL } from "./base";
 
-async function getTrendingMovies() {
+async function getFavMovie() {
   const resp = await axios.get(`${API_URL}/movies`);
   return resp.data;
 }
 
-export default getTrendingMovies;
+export default getFavMovie;

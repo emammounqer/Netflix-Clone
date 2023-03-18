@@ -11,29 +11,19 @@ import Spinner from "react-bootstrap/Spinner";
 import addMovie from "../../api/addMovie";
 
 function ModalMovie({ movie, show, closeModal }) {
-  const [formData, setFormData] = useState({ comment: "" });
+  const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const handleFormData = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleCloseBtn = () => {
-    closeModal();
-    setFormData({ comment: "" });
-    setError("");
-  };
+  const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
+    setError(null);
 
     try {
       await addMovie({
         ...movie,
-        comment: formData.comment,
+        comment: comment,
       });
       closeModal();
     } catch (error) {
@@ -41,6 +31,12 @@ function ModalMovie({ movie, show, closeModal }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCloseBtn = () => {
+    closeModal();
+    setComment("");
+    setError(null);
   };
 
   return (
@@ -79,11 +75,12 @@ function ModalMovie({ movie, show, closeModal }) {
               <Form.Control
                 as="textarea"
                 aria-label="With textarea"
-                value={formData.comment}
+                value={comment}
                 name="comment"
-                onChange={handleFormData}
+                onChange={(e) => setComment(e.target.value)}
               />
             </InputGroup>
+
             <Button variant="secondary" onClick={handleCloseBtn}>
               Close
             </Button>
@@ -92,6 +89,7 @@ function ModalMovie({ movie, show, closeModal }) {
               {loading && <Spinner animation="border" size="sm" />}
             </Button>
           </Modal.Footer>
+
           {error && (
             <pre className="text-danger px-2">
               Error: {JSON.stringify(error, undefined, 2)}

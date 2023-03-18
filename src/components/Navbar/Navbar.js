@@ -6,7 +6,7 @@ function NavBar() {
   return (
     <BNavbar bg="dark" variant="dark">
       <Container>
-        <BNavbar.Brand href="#home">
+        <BNavbar.Brand href="/">
           <img
             alt=""
             src="/logo.png"
