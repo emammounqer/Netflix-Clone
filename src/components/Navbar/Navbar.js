@@ -1,6 +1,7 @@
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import BNavbar from "react-bootstrap/Navbar";
+import { Link } from "react-router-dom";
 
 function NavBar() {
   return (
@@ -16,8 +17,8 @@ function NavBar() {
           Netflix Clone
         </BNavbar.Brand>
         <Nav className="me-auto">
-          <Nav.Link href="/">Home</Nav.Link>
-          <Nav.Link href="/favMovie">Favorite Movies</Nav.Link>
+          <Link className="nav-link" to="/">Home</Link>
+          <Link className="nav-link" to="/favMovie">Favorite Movies</Link>
         </Nav>
       </Container>
     </BNavbar>
